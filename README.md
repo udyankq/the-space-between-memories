@@ -1,4 +1,4 @@
-# The Space Between Memories — Уровень 0
+# The Space Between Memories - Уровень 0
 
 An AI-powered interactive memory diary. Explore the yellow corridors of Level 0, where picture frames become portals into personal memories. Upload up to four photos, describe a moment, and optionally add music. AI interprets the materials and reconstructs an explorable world shaped by the place, people, objects, atmosphere and emotion.
 
