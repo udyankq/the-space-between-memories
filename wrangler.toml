@@ -1,0 +1,19 @@
+# The Space Between Memories — game + AI proxy on one Cloudflare Worker
+name = "space-between-memories"
+main = "src/worker.js"
+compatibility_date = "2026-11-01"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+
+[vars]
+# gemini (free tier available) or anthropic (Claude, paid)
+PROVIDER = "gemini"
+# model name; leave empty for the default of the chosen provider
+MODEL = "gemini-3.1-flash-lite"
+# requests allowed per visitor IP per 10 minutes (best effort)
+RATE_LIMIT = "12"
+# also accept requests from the game opened as a local file (origin "null")
+ALLOW_FILE = "0"
