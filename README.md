@@ -1,243 +1,202 @@
 # The Space Between Memories — Уровень 0
 
-A Doom-style memory diary. You wander the yellow corridors of "Level 0". Each empty picture frame on the walls can hold one memory: a photo of a place (or up to four, blended together), a short story, and optionally music. The memory becomes a portal into a walkable world built from that material.
+An AI-powered interactive memory diary. Explore the yellow corridors of Level 0, where picture frames become portals into personal memories. Upload up to four photos, describe a moment, and optionally add music. AI interprets the materials and reconstructs an explorable world shaped by the place, people, objects, atmosphere and emotion.
 
 ## How to run
 
-- **ZIP / folder:** open `index.html` in Chrome or Edge. It works directly from disk (`file://`); this was tested with headless Chrome.
-- **Static hosting (HTTPS):** upload `index.html` to any static host (GitHub Pages, Netlify, Cloudflare Pages, a plain web server). This was tested over plain `http://localhost`.
-- **Inside Claude (artifact):** the same file can also use Claude to understand photos, a cloud save tied to your Claude account, and the Claude download dialog for exports.
-
-What the page needs and doesn't need:
-- No server, no API keys, no paid services and no CDN.
-- The fonts are embedded in the file.
-- No network requests are needed to play.
-- Offline use without internet: the file makes no requests, but airplane mode was **not** tested separately.
+- **Online (recommended):** Play at https://space-between-memories.erkin-rauan.workers.dev. Gemini AI (Google AI Studio) is connected through a secure Cloudflare Worker.
+- **Offline fallback:** When cloud AI is unavailable, the game uses its built-in photo analysis, music analysis, neural models where supported, and rule-based generation.
+- **Local HTML:** The bundled HTML can be opened locally for the supported offline experience. Cloud AI requires the configured server and an internet connection.
+- **Security:** The Gemini API key is stored in Cloudflare secrets, never in the public HTML.
 
 ## Controls
 
 | Input | Action |
 |---|---|
-| WASD / arrow keys | move |
-| Mouse | look around (click the screen to capture the mouse) |
-| Shift | run |
-| E | act |
-| M | map |
-| Esc | menu |
-| Phone | left half of the screen to walk, right half to turn, E button to act |
+| WASD / arrow keys | Move |
+| Mouse | Look around (click to capture the mouse) |
+| Shift | Run |
+| E | Interact |
+| M | Map |
+| Esc | Menu |
+| Phone | Left side to move, right side to look, E to interact |
 
-In the hub, **red-brown frames are yours (10 of them)**. The **blue-grey frames are 5 built-in demo memories** (marked DEMO, view-only). You come back from a memory through the glowing portal behind your starting point, or through Esc → "Вернуться в Уровень 0" ("Return to Level 0").
+In the hub, **red-brown frames** hold personal memories and **blue-grey frames** hold five built-in demo memories. The archive is designed to expand: new memories can add corridors and frames instead of being restricted to ten. Return through the glowing portal or via Esc → «Вернуться в Уровень 0».
 
 ## Prologue
 
-The prologue plays automatically on first launch: about 20 s of black screen with the text fading in segment by segment. The fluorescent hum fades in on the last line, then the screen fades into the hub. Controls turn on only after the transition.
-
-- **Skip:** the "Skip intro" button or Esc.
-- **Replay:** the "▶ ПРОЛОГ" button in the menu.
-- **Sound:** browsers only allow audio after a click, so the hum plays if you have clicked the screen at least once.
+The prologue **does not start automatically**. It can be opened from the main menu using **«▶ ПРОЛОГ»**. It presents the game's concept through cinematic text, visual transitions and atmospheric sound. Use the available skip control or Esc to exit. Browser audio may require an initial click.
 
 ## How text, photos and music shape the world
 
-**Story text (the main semantic source when there's no AI).**
-The rule-based analysis reads the story in Russian or English and extracts:
-- the kind of place (beach, lake, forest, park, countryside, field, mountains, city, snow, campsite, room, kitchen, desk);
-- the time of day and the season;
-- the weather;
-- who was there (friends, family, a partner, alone);
-- events (campfire, walk, celebration, work/deadline, picnic, swim, tea, music);
-- the emotion;
-- the **focal object** (campfire, table, laptop, bench…);
-- the objects the story mentions.
-
-Every attribute stores its source: "text", "photo-colours", "music", "manual" or "assumed". Assumed things are listed separately; the scene object is visible in the frame menu. Forests and mountains appear only if the story or the photo points to them.
+**Story text.** The description helps determine the place (beach, lake, forest, park, countryside, field, mountains, city, snow, campsite, room, kitchen or desk), time of day, season, weather, people, events, emotion, focal object and mentioned objects. In offline mode, rules interpret Russian and English descriptions. Each scene attribute can retain its source: text, photo colours, music, manual settings or assumptions.
 
 **Photos.**
-- **Offline,** a photo is analysed only by its **colours**: sky/no sky, greenery, sand, water, brightness. That gives the palette, a hint of indoors vs outdoors, and night. It does **not** recognise objects; it is described honestly in the interface and in the scene object.
-- **In Claude,** the photo is understood by the model (vision). It decides the kind of place and the focal object, and the photo takes priority over the text.
-- The original photo is never shown on the sky or on boundaries. It is kept untouched. It appears as a small "original photo" card when you reach the heart of the memory (or the centre of each blended place), and as small pictures on the walls of indoor worlds.
+- **Online AI:** Gemini interprets the photograph and description to infer spatial structure, relevant objects, people and atmosphere.
+- **Offline:** Colour analysis provides clues about greenery, water, sand, sky, brightness and indoor/outdoor conditions. It does not provide the same object recognition as cloud AI.
+- The original photo is preserved and can be displayed within the memory instead of being stretched across the sky or scene boundaries.
 
-**Music.** It plays only inside its own memory. It fades out when you return to the hub and is turned down while paused. One shared player is used, so playback never doubles. Music never adds objects to the world (the old visualiser pillars are gone); it only affects light, haze and particles.
-- **Local file (mp3/m4a/wav/ogg, up to 8 MB).** It is analysed in the browser with Web Audio: tempo, key, energy, brightness, bass, dynamics. The world reacts live, and gently: brightness changes by no more than ±20%, with no strobing.
-  - Music fills in only what the story didn't say: time of day, weather particles.
-  - Mood comes from key + energy, never from tempo alone.
-  - Music never overrides an emotion the story states.
-- **Link (YouTube, Spotify, Yandex Music…).** Only the link is saved, and it opens in the service itself (official playback). Nothing is downloaded or analysed.
-- **Manual mood and energy.** Used when there's no file. A generative melody plays in the chosen mood.
+**Music.** Music belongs to its own memory and fades when leaving. One shared player avoids duplicate playback.
+- **Local file (mp3/m4a/wav/ogg, up to 8 MB):** Web Audio analyses tempo, key, energy, brightness, bass and dynamics. Lighting and particles respond gently without strobing.
+- **Music links:** YouTube, Spotify and Yandex Music links open in their respective services rather than being downloaded.
+- **Manual mood and energy:** Used when no local music file is provided; a generative melody can provide atmosphere.
+- Music affects atmosphere rather than introducing unrelated physical objects. Explicit emotions from the user's story take priority over musical inference.
 
 ## People, dialogue and text: what comes from your input
 
-- **Characters only from evidence.**
-  - Inside Claude, the AI looks at a person's photo and draws a pixel model from it.
-  - Offline, the figure is the photo itself, shown as a cut-out card. No appearance is reconstructed or invented.
-  - People who are only mentioned in the story ("with friends") appear as neutral silhouettes labelled "appearance unknown".
-  - No random people are ever created.
-- **Characters speak only explicit quotes from the story** (text in quotation marks).
-  - A quote goes to the person it is attributed to: «Мама сказала: "…"» goes to the figure labelled "мама".
-  - If nobody fits, the quote is heard at the heart of the memory.
-  - Everything else is shown as a diary fragment, never as speech.
-- **Diary fragments are your own sentences.** The AI no longer writes "first-person memories".
-- **Titles use only what was said.** Weather, season and time words appear only if the story states them. With too little to go on, the title is a clean excerpt of your text. The frame menu lists what was assumed and what was ambiguous.
+- **Evidence-based characters:** People are reconstructed or represented according to available photo and story evidence. Offline fallback can use photo cut-outs or neutral silhouettes when visual details are unknown.
+- **Dialogue:** Explicit quotations from the user's description can be associated with their attributed characters. The system should not invent personal conversations.
+- **Diary fragments:** The user's own sentences are used instead of fabricated first-person memories.
+- **Titles:** Generated from information supplied by the user, with editing available in the frame menu. Ambiguous or assumed details are identified where supported.
 
-## Cloud AI (optional, through your own Cloudflare server)
+## Voice narration
 
-The `space-between-memories-cloudflare.zip` package publishes the game together with a small proxy server on Cloudflare (free plan). Step-by-step instructions are in `README-DEPLOY.md`.
+The game includes **prerecorded human voice narration** with universal phrases.
 
-- The AI key (Gemini or Claude) is kept only in the server's secrets, never in the HTML.
-- Opened from that link, the game sends the photos and the story to the proxy. The AI describes the place and the people in detail: hairstyle, accessories, clothing.
-- The game still checks every answer: invented dialogue and "memories" are dropped, and outdoor objects are not placed indoors.
+The voice library organises phrases by:
+- **Category:** greeting, question, reaction, memory, remark and closing.
+- **Emotion:** happy, sad, calm and angry.
+- **Voice variation:** available voices and age-related settings.
 
-Priority order:
-1. Claude, if the game is opened inside Claude.
-2. Your cloud server.
-3. The built-in neural network.
-4. Plain offline rules.
+Suitable recordings are selected to complement the atmosphere and context of a memory. Narration is occasional rather than continuous, and it does not replace the user's own story or invent specific personal events. The audio system coordinates voice and music, and missing clips should not interrupt gameplay. This feature uses prerecorded voice assets rather than live text-to-speech generation.
 
-The current mode is shown in the menu (Esc).
+## Cloud AI — primary generation mode
 
-## Built-in neural network (works without Claude, keys or internet)
+**Cloud AI is the primary generation system.** The game uses the **Gemini API from Google AI Studio** through a **Cloudflare Worker** backend.
 
-`index.html` carries a small neural network for reading photos of people: Human 3.3 / TensorFlow.js, plus the BlazeFace, MoveNet, Selfie-segmentation and GEAR models, about 8 MB in total. It runs in the browser on the GPU (WebGL), and falls back to the CPU if there's no GPU. It also works when the file is opened straight from disk, so a judge can just open the file.
+When users upload photographs, write a description and optionally add music, AI analyses the available materials and generates a structured specification for the memory world. This includes:
+- Location and spatial structure.
+- Objects and people supported by the source materials.
+- Time of day, season, weather and lighting.
+- Emotional atmosphere and relationships between scene elements.
+- A coherent arrangement suitable for exploration.
 
-**What it does with a photo of a person:**
-- Finds the face, the body pose (shoulders, elbows, hips, knees, ankles) and the person's outline.
-- Estimates the age.
-- Reads colours from exactly those regions: skin from the face, hair above and beside the face, top from the torso, sleeves from the forearms, bottom from the thighs, shoes from the ankles.
-- Builds the pixel model from that.
+The game then renders an interactive environment from this specification. Validation helps avoid unsupported dialogue, inconsistent layouts and inappropriate object placement.
 
-**What it doesn't do:**
-- Recognise style details (glasses, prints, hats). Nothing is invented for them.
-- Guess parts the photo doesn't show. They get a neutral colour and are listed as "не видно" ("not visible") in the frame menu (hover over a figure to see the list).
-- Make up a person when no body is found. In that case the photo itself is shown as a cut-out figure.
+**Offline mode is the fallback, not the primary mode.** If the internet, API or cloud service is unavailable, local generation uses rule-based interpretation, photo-colour analysis, music features and built-in neural models where supported. This keeps the core experience accessible with less semantic detail than Gemini.
 
-**Performance:** on an ordinary laptop with a GPU, reading one photo takes a few seconds. In a software-only browser (no GPU) it took about 15 seconds.
+The API key stays in Cloudflare Worker secrets. Deployment details are in `README-DEPLOY.md`.
 
-Inside Claude, Claude still reads the photos first (more detail). The built-in network is used when Claude isn't available.
+## Built-in neural network (offline)
+
+The original HTML includes Human 3.3 / TensorFlow.js and bundled models such as BlazeFace, MoveNet, Selfie-segmentation and GEAR, approximately 8 MB in total, for supported local person analysis. It can use WebGL or fall back to CPU.
+
+**Capabilities:**
+- Detect face, body pose and silhouette.
+- Estimate age and sample colours from visible body regions.
+- Build a pixel-style character representation from detected features.
+
+**Limitations:**
+- Cannot reliably infer unseen details, glasses, prints or accessories.
+- Unknown parts should remain neutral and be identified as not visible.
+- When detection fails, the photo itself can be displayed as a cut-out rather than inventing a character.
+
+Previously recorded performance: a few seconds on a GPU-equipped laptop and around 15 seconds in a software-only browser. Actual performance depends on hardware.
 
 ## Rooms and windows
 
 - **Human scale:** hotel room 5×7 cells, room 6×7, kitchen and desk 5×6.
-- **A window is an opening in the exterior wall.** The renderer shows the outside through the glass: sky for the time of day, clouds, horizon. Your photo is no longer hung on the wall as a "painting".
-- **"View from the window".** If the story says this, you start inside the room, 2–3 steps from the window, facing it. Outdoor words in such a story ("sea", "city", "mountains") become the view outside, not objects in the room.
-- **Sky colour.** It comes from the photo only when the photo is the view outside. Otherwise it follows the time of day.
-- **Scene check before building.** The scene spec is checked and repaired first: no outdoor objects indoors, no weather indoors, correct scale, people and dialogue backed by input, text taken from the story. Explicit text is never silently overridden by photo colours; conflicts are flagged instead.
+- **Windows:** Openings in exterior walls show an outside view with sky, clouds and horizon.
+- **View from the window:** When described, the player begins indoors facing the window; outdoor scenery belongs outside rather than inside the room.
+- **Sky colour:** Uses the photo when it represents the outside view, otherwise follows the time of day.
+- **Scene validation:** Checks indoor/outdoor consistency, scale, character evidence and story details before rendering.
 
 ## Composition and vast outdoor worlds
 
 **Outdoors.**
-- The playable zone is an irregular blob about 22–32 cells across, inside a 66–76-cell grid.
-- There are **no walls** at the edge:
-  - beyond the zone are lightweight distant scenery sprites;
-  - the floor continues to infinity (water extends into an infinite ocean);
-  - silhouettes of hills, forest, city, mountains or fields are baked into the bottom of the sky panorama.
-- The edge of the zone is closed by **natural obstacles** that match the place: trees, hedges, dunes, rocks, reeds, water, or buildings in the city. The invisible boundary runs exactly along them. A validation step checks every edge cell and adds a bush if any edge was left open.
+- Playable areas use an irregular shape approximately 22–32 cells across inside a 66–76-cell grid.
+- Distant scenery sprites, extended terrain and sky panoramas create the impression of an expansive environment.
+- Natural obstacles such as trees, hedges, dunes, rocks, reeds, water and buildings mark playable boundaries.
 
 **Composition.**
-- **Focal point:** straight ahead from where you appear, at about 6–8 cells. People from the story stand around it. A path leads from where you appear to the focal point.
-- **Mentioned objects:** in the middle ground, in view.
-- **Trees, bushes, rocks:** clustered in groves in the background band, away from the line of sight.
-- **Benches, lamps:** along the path.
-- **Houses and tents:** in the far band.
+- **Focal point:** Usually ahead of the player, approximately 6–8 cells away.
+- **Mentioned objects:** Placed in the visible middle ground.
+- **Trees, bushes and rocks:** Grouped into natural clusters.
+- **Benches and lamps:** Positioned along paths.
+- **Houses and tents:** Generally placed farther away.
 
-**Indoors.** Rooms keep architectural walls. Furniture stands against the walls, with the table and chairs in the centre. On a rainy day the windows show raindrops; it doesn't rain inside the room.
+**Indoors.** Rooms retain architectural walls and coherent furniture placement. Rain can be visible through windows without appearing inside the room.
 
-**Validation.** Each world is checked for:
-- the spawn point being walkable;
-- the focal point being reachable;
-- objects floating in the air (they are put back on the ground);
-- objects in water (removed);
-- open edges (closed).
+**Validation checks:** Walkable spawn, reachable focal point, grounded objects, appropriate water placement and closed playable boundaries.
 
-The result appears in the frame menu.
-
-**Determinism.** Generation uses a seed stored in the record. The same memory is always built the same way.
+**Determinism:** Stored generation seeds support consistent reconstruction of the same memory.
 
 ## The art system
 
-There are five influences. Their weights (0–1) are blended in one pass, so styles can be combined:
+Five artistic influences can be blended with weights from 0 to 1:
 
 | Influence | Post-processing | Generation |
 |---|---|---|
-| **Monet · impressionism** | soft "brush strokes" from a static noise field, pastel lift | — |
-| **Kandinsky · expression** | strong saturation, light posterisation, saturation gently follows the music's bass | slightly more objects |
-| **Super 8 · film** | warm cast, vignette, grain, a light leak on the left, rare dust and a 1-px frame jump (both off when "less motion" is on) | — |
-| **Romantic landscape** | contrast, darker upper sky, golden light at the horizon, vignette | more clouds, deeper haze |
-| **Ma · Japanese minimalism** | desaturation, paper tone, softer contrast | fewer objects, emptier space, less haze |
+| **Monet · impressionism** | Soft brush-like texture, pastel colours | — |
+| **Kandinsky · expression** | Strong saturation, light posterisation, music-reactive colour | Slightly more objects |
+| **Super 8 · film** | Warm cast, vignette, grain, light leaks and subtle film movement | — |
+| **Romantic landscape** | Stronger contrast, golden horizon light, atmospheric haze | More clouds and haze |
+| **Ma · Japanese minimalism** | Desaturation, paper tone, softer contrast | Fewer objects and more empty space |
 
-- **"Auto"** picks the weights from emotion and place. For example: calm → Monet + Ma; nostalgia → Super 8; tension → Kandinsky; wide landscapes → Romantic.
-- **Manual choice:** chips when creating a memory, and also in the frame menu.
-- The styles change only colour and light. They add no abstract shapes to physical scenes.
+- **Auto:** Selects influences based on mood and environment, such as Monet + Ma for calm or Super 8 for nostalgia.
+- **Manual:** Users can adjust artistic styles while creating or managing a memory.
+- The art system affects visual presentation without inventing unrelated physical objects.
 
 ## Titles
 
-Titles are rule-based, 3–7 words in the story's language. Examples: "Закат из окна отеля" ("Sunset from the hotel window"), "Ночь у костра с друзьями" ("Night by the campfire with friends"), "Вечер дома с сестрой" ("Evening at home with my sister"). When the rules have too little to go on, the title falls back to an excerpt of your own text. You can edit the title in the frame menu (Enter saves it).
+Titles are generated in the story's language, generally using 3–7 words supported by the description. Examples include «Закат из окна отеля», «Ночь у костра с друзьями» and «Вечер дома с сестрой». When insufficient information is available, the title falls back to an excerpt of the original text. Titles can be edited in the frame menu.
 
 ## Saving, export, import
 
-- **Storage:** IndexedDB (`liminal-worlds`). Record schema v3: `id, created, t, frame, title, titleAuto, caption, img, extras, spec (including scene), art, seed, music{name, features}, musicLink, manual`. Audio is a Blob in a separate store. localStorage holds only two tiny flags (prologue seen, less motion).
-- **Delete:** frame menu → "УДАЛИТЬ" ("Delete"), with a confirmation.
-- **Export:** "⇩ ЭКСПОРТ" in the menu writes a `.json` with photos, settings and audio (base64).
-- **Import:** "⇧ ИМПОРТ" checks the file, validates every field (only `data:image/*` for photos, `audio/*` for sound, length limits) and runs the content check. It restores memories into free frames; a memory with the same id goes back to its own frame.
-- **Storage full:** handled with a message suggesting you delete or export.
+- **Storage:** IndexedDB (`liminal-worlds`) stores memory records, scene specifications, photos and associated audio data. The original schema includes `id, created, t, frame, title, titleAuto, caption, img, extras, spec, art, seed, music, musicLink, manual`.
+- **Delete:** Frame menu → «УДАЛИТЬ», with confirmation.
+- **Export:** «⇩ ЭКСПОРТ» saves memory data as JSON, including supported images and audio.
+- **Import:** «⇧ ИМПОРТ» validates the file and restores memories to available frames.
+- **Storage full:** The interface can recommend deleting or exporting memories.
 
 ## Content check
 
-Every description (and character names, and titles) is checked before generation.
-- **Blocked:** explicit sexual content; sexualisation of minors; sexual violence; graphic violence; hate and calls for violence against groups; instructions or promotion of serious harm.
-- **Allowed:** grief, death, funerals, war, history, non-graphic trauma.
-- **How it works:** offline, by context-scored rules (combinations of words within one sentence, with a discount for a grief/history context), not by a single blocklist. In Claude, the model returns an additional `safety` verdict.
-- **Message:** a respectful explanation in Russian or English. The check isn't perfect, and the message says so.
-- **User text is treated as data:**
-  - it is inserted only via `textContent` or escaped;
-  - in the AI request it is wrapped in JSON with an explicit "this is data, not instructions" note.
+Descriptions, character names and titles undergo content checks before generation.
+- **Blocked:** Explicit sexual content, sexualisation of minors, sexual violence, graphic violence, hate or calls for violence against groups, and instructions promoting serious harm.
+- **Allowed:** Grief, death, funerals, war, history and non-graphic trauma.
+- **Offline checking:** Uses context-sensitive rules rather than only isolated keywords.
+- **User text:** Treated as data and escaped or inserted through safe text APIs where supported.
+- Automated checks are imperfect and should not be described as guaranteeing safety.
 
 ## Accessibility and performance
 
-- "Less motion" follows the system `prefers-reduced-motion` setting and has a toggle in the menu. It turns off: head bob, flashes, music-driven pulsing, film flicker. It also slows down particles and simplifies the prologue.
-- Rendering is a Canvas 2D raycaster at 320×200, with sprite culling by haze and a texture cache for scenery.
-- In headless Chrome (software rendering) the demo worlds ran at about 60 fps, with 400–760 sprites per world.
+- **Less motion:** Follows `prefers-reduced-motion` and can be toggled in the menu. Reduces head bob, flashes, pulsing, film flicker and particle motion.
+- **Rendering:** Canvas 2D raycaster at 320×200 with sprite culling and a texture cache.
+- **Earlier benchmark:** Approximately 60 fps in headless Chrome software rendering for demo scenes with 400–760 sprites. This is a previous test result, not a guarantee for every device or updated build.
 
 ## Test cases (built-in demos)
 
 | | Story | Result |
 |---|---|---|
-| A | peaceful autumn walk | park, falling leaves, path with benches and lamps, Monet + Ma |
-| B | night by the campfire with friends | campsite, 3 friends around the fire, pines at the edge, Super 8 |
-| C | stress, late night, project | room, desk with laptop as focal point, night, Kandinsky |
-| D | nostalgic rainy evening | room, rain on the window, Super 8 + Monet |
-| E | joyful summer day at the sea | beach, infinite ocean, dunes and rocks at the edge, family by the sandcastle |
+| A | Peaceful autumn walk | Park, falling leaves, path with benches and lamps, Monet + Ma |
+| B | Night by the campfire with friends | Campsite, three friends around the fire, pines at the edge, Super 8 |
+| C | Stress, late night, project | Room, desk with laptop as focal point, night, Kandinsky |
+| D | Nostalgic rainy evening | Room, rain on the window, Super 8 + Monet |
+| E | Joyful summer day at the sea | Beach, infinite ocean, dunes and rocks, family by the sandcastle |
 
 ## What was tested and how
 
-**Regression suite:** `python3 tests/regression.py`. 38 checks (one more if you put any full-body photo at `tests/person_photo.jpg`: it then checks the built-in neural network on a real person), Playwright + Chrome, offline. Each one checks the meaning of the scene, not only that it rendered.
-- **Hotel window at sunset (RU and EN):** you are indoors, the room is human-scale, the window is an opening and you face it, nothing is hung as a "painting", the sky pixel behind the glass is warm, and the title is right.
-- **Campfire with friends:** silhouettes only, and nobody speaks.
-- **Room with uploaded photos of people:** the figures come from exactly those photos, and narration doesn't become speech.
-- **Quoted dialogue:** the quote is spoken by the person it's attributed to, and no broken fragments are left behind.
-- **Music:** it plays, stops after you leave, comes back through the same single player when you re-enter, and is still correct after 9 switches between memories.
-- **Rebuild after success:** a new validated world from the same inputs, with the music kept.
-- **Rebuild after an injected failure:** the old memory stays intact and the button works again.
-- **Refresh and reopen:** memories come back with their photo figures.
-- **5 demos:** they build and validate, with no visualiser objects.
+**Earlier regression suite:** `python3 tests/regression.py`. The previous version documented 38 checks using Playwright and Chrome in offline mode. These results describe the earlier implementation and do not automatically validate the new cloud AI, narration or dynamic corridor features.
 
-**Also run:**
-- the prologue;
-- edge walks in 8 directions;
-- moderation (16 phrases);
-- export → wipe → import;
-- an unsupported audio file;
-- frame rate.
+Earlier checks included:
+- **Hotel window at sunset (RU and EN):** Indoor spawn, correct scale, visible outside view and title.
+- **Campfire with friends:** Appropriate silhouettes without invented speech.
+- **Photos of people:** Character representation derived from supplied photos.
+- **Quoted dialogue:** Correct attribution.
+- **Music:** Playback, stopping and returning across memory switches.
+- **Rebuild:** Successful reconstruction and preservation after simulated failure.
+- **Refresh and reopen:** Persistence of saved memories.
+- **Five demos:** Scene construction and validation.
 
-**Not tested:**
-- the Claude AI path (vision) and the cloud save;
-- the Claude download dialog;
-- phones, Safari and Firefox;
-- running with the network physically off;
-- listening by ear: the tests check the player's state, not what you actually hear.
+Additional earlier manual checks included prologue, edge movement, moderation examples, export/import, unsupported audio and frame rate.
+
+**Not established by those earlier tests:** Current Gemini AI behaviour, prerecorded narration, dynamic corridor expansion, mobile compatibility, Safari/Firefox compatibility and physically disconnected network behaviour. These should be verified separately against the final hackathon build.
 
 ## Libraries, assets, AI
 
-- **Code:** the game is written by hand. The only bundled library is the local neural network (Human + TensorFlow.js, MIT / Apache 2.0); see `THIRD-PARTY-LICENSES.txt`. The FFT and the key detection (Krumhansl profiles) are implemented in the file.
-- **Fonts:** Press Start 2P, IBM Plex Mono, Cormorant Garamond (SIL Open Font License 1.1), embedded from the @fontsource packages.
-- **Graphics:** all graphics (textures, sprites, characters, sky, demo photos) are drawn by code.
-- **Music:** generative, Web Audio.
-- **AI:** optional, only inside Claude (Claude's `sample` capability with images). Without it, everything works offline using the rules described above.
+- **Code:** Custom game implementation. Bundled local neural-network components include Human and TensorFlow.js; see `THIRD-PARTY-LICENSES.txt`.
+- **Fonts:** Press Start 2P, IBM Plex Mono and Cormorant Garamond (SIL Open Font License 1.1).
+- **Graphics:** Procedural textures, sprites, characters and skies.
+- **Music:** Generative audio and Web Audio analysis.
+- **Voice narration:** Prerecorded human speech clips selected by category and emotional context.
+- **AI:** Gemini API via Google AI Studio and Cloudflare Worker is the primary mode. Built-in models and offline rules provide fallback generation.
